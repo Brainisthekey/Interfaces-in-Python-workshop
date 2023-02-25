@@ -1,17 +1,21 @@
 """Singleton using metaclasses"""
-
-
+from typing import Dict, Type
+import functools
 
 
 # >> Without metaclasses
 
-def singleton(class_):
-    instances = {}
-    def getinstance(*args, **kwargs):
-        if class_ not in instances:
-            instances[class_] = class_(*args, **kwargs)
-        return instances[class_]
-    return getinstance
+def singleton(_class: Type[object]) -> object:
+
+    _instances: Dict[type, object] = {}
+
+    @functools.wraps(_class)
+    def get_instance(*args, **kwargs) -> object:
+        if _class not in _instances:
+            _instances[_class] = _class(*args, **kwargs)
+        return _instances[_class]
+
+    return get_instance
 
 
 @singleton
@@ -43,20 +47,20 @@ print(first_instance is second_instance)
 
 # Using magic method __new__
 class Singleton:
-    _instances = {}
+    _instances: Dict[type, 'Singleton'] = {}
 
-    def __new__(cls):
+    def __new__(cls) -> 'Singleton':
         if cls not in cls._instances:
             cls._instances[cls] = super().__new__(cls)
         return cls._instances[cls]
 
 
-class SingleInstanceClass(Singleton):
+class SingleInstanceMeta(Singleton):
     ...
 
 
-first_instance = SingleInstanceClass()
-second_instance = SingleInstanceClass()
+first_instance = SingleInstanceMeta()
+second_instance = SingleInstanceMeta()
 print(first_instance is second_instance)
 # >> True
 
@@ -81,9 +85,9 @@ print(first_instance is second_instance)
 
 # Using metaclasses
 class Singleton(type):
-    _instance = {}
+    _instance: Dict[type, 'Singleton'] = {}
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args, **kwargs) -> 'Singleton':
         if cls not in cls._instance:
             cls._instance[cls] = super().__call__(*args, **kwargs)
         return cls._instance[cls]

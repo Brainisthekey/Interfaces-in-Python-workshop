@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Optional, List, Any, Union
 import uuid
 from enum import Enum, IntEnum
 from pydantic import BaseModel, PrivateAttr
 
 
 # Payload and subject used by message broker
-received_subject = None
-received_payload = None
+received_subject: Optional[str] = None
+received_payload: Optional[Union[BaseModel, dict, str]] = None
 
 
 
@@ -99,7 +99,7 @@ class Nats(MessageBroker):
         received_subject = subject
         received_payload = payload
     
-    def subscribe(subject: str):
+    def subscribe(self, subject: str):
         ...
 
 
@@ -129,7 +129,7 @@ class ZMQ(MessageBroker):
 
 class MemoryStorage(BaseStorage):
 
-    _memory_storage = []
+    _memory_storage: List[BaseModel] = []
 
     def add(self, model: BaseModel):
         self._memory_storage.append(model)
@@ -193,13 +193,11 @@ class MessageTransporter:
         self.message_broker = message_broker
 
     def send(self, subject, payload):
-        if isinstance(self.message_broker, Nats):
-            # There adapt our payload
-            ...
-            self.message_broker.publish(subject, payload)
-        elif isinstance(self.message_broker, ZMQ):
-            # There adapt our payload
-            ...
+        match self.message_broker:
+            case Nats():
+                self.message_broker.publish(subject, payload)
+            case ZMQ():
+                ...
     
     def listen(self, subject):
         self.message_broker.subscribe(subject)

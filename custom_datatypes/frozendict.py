@@ -23,13 +23,13 @@ from collections import abc
             A uniq data structure which will follow two simple rules
 
         ACs:
-            - The data stricture is partially "frozen" - keys/values are not removable
-            - Data stricture is restricted to store some specific keys
+            - The data structure is partially "frozen" - keys/values are not removable
+            - Data structure is restricted to store some specific keys
             - Data should be ordered!
 """
 
 
-# A Q: bit off topic, but do you know a stricture(mapping) that can't be modified ?
+# A Q: bit off topic, but do you know a structure(mapping) that can't be modified ?
 
 # {'key': 'value'}
 
@@ -58,9 +58,9 @@ frozendict = MappingProxyType({'key': 'value'})
 # frozendict['key'] = 'another_value'
 # >>> TypeError: 'mappingproxy' object does not support item assignment
 
-print(frozendict)
-print(frozendict['key'])
-print(type(frozendict))
+# print(frozendict)
+# print(frozendict['key'])
+# print(type(frozendict))
 
 
 

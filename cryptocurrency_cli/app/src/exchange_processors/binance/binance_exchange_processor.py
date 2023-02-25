@@ -17,8 +17,7 @@ class BinanceExchangeProcessor(CryptoExchangeProcessor):
         super().__init__(client)
     
     def ping_client(self) -> ResponseDetails:
-        ...
-        # return 200
+        return 200
 
     def show_candles(self, symbol: str, interval: Optional[str]) -> Union[CandleDetails, ResponseDetails]:
         ...
@@ -27,5 +26,4 @@ class BinanceExchangeProcessor(CryptoExchangeProcessor):
         ...
 
     def get_account(self, timestamp: Optional[datetime]) -> Union[AccountDetails, ResponseDetails]:
-        ...
-        # return AccountDetails(username='Andrii', balances={'BTC': 777})
+        return AccountDetails(username='Andrii', balances={'BTC': 777})

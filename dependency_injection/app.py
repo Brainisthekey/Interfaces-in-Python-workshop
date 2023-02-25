@@ -168,24 +168,15 @@ if __name__ == "__main__":
 
 
 
-    # The best part -> Testing
+# The best part -> Testing
 
-    class TestApiClient:
+class TestApiClient:
 
-        def create_user(self):
-            return 'I just override the function!'
+    def create_user(self):
+        return 'I just override the function!'
 
-    with container.api_client.override(TestApiClient()):
-        print(main())  # <-- overridden dependency is injected automatically
-
-
-
-
-
-
-
-
-
+with container.api_client.override(TestApiClient()):
+    print(main())  # <-- overridden dependency is injected automatically
 
 
 

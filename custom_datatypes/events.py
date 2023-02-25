@@ -267,8 +267,8 @@ class EventContainer(abc.Sequence):
 
     _storage: List[Event] = []
 
-    def __new__(cls):
-        cls._storage = list()
+    def __init__(self):
+        self._storage = list()
 
     def append(self, value: Event) -> None:
         if not isinstance(value, Event):

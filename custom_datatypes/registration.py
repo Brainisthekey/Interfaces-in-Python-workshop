@@ -319,7 +319,7 @@ uniq_users.add(duplicate_user)
 
 # print(uniq_users)
 
-second_data_type = UniqList()
+# second_data_type = UniqList()
 # print(second_data_type)
 
 # We have one critical issue with that code :(
@@ -541,7 +541,7 @@ uniq_users.add(second_user)
 uniq_users.add(duplicate_user)
 uniq_users.add(same_email_user)
 
-print(uniq_users.get_uniq_registrations())
+# print(uniq_users.get_uniq_registrations())
 
 
 

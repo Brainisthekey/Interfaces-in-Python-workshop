@@ -17,7 +17,7 @@ class PermissionDenied(Exception):
 
 
 class ResponseDogs(TypedDict):
-    facts: List[str]
+    facts: Optional[List[str]]
     success: bool
 
 
@@ -35,8 +35,8 @@ class ApiClient(ABC):
     def request(
         self,
         url: str,
-        params: Optional[QueryParams] = {},
-        headers: Optional[RequestHeaders] = {}
+        params: Optional[QueryParams] = None,
+        headers: Optional[RequestHeaders] = None
     ) -> ResponseDogs:
         raise NotImplementedError()
 
@@ -67,12 +67,27 @@ class ApiDogsPublic(ApiClient):
     def request(
         self,
         url: str,
-        params: Optional[QueryParams] = {},
-        headers: Optional[RequestHeaders] = {}
+        params: Optional[QueryParams] = None,
+        headers: Optional[RequestHeaders] = None
     ) -> ResponseDogs:
         response: httpx.Response = httpx.get(url, params=params, headers=headers)
         response_data: dict = response.json()
-        return ResponseDogs(response_data)
+        return ResponseDogs(facts=response_data['facts']['facts'], success=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -84,16 +99,23 @@ class ApiDogsPaginated(ApiClient):
     def request(
         self,
         url: str,
-        params: Optional[QueryParams] = {},
-        headers: Optional[RequestHeaders] = {}
+        params: Optional[QueryParams] = None,
+        headers: Optional[RequestHeaders] = None
     ) -> ResponseDogs:
-        if self._has_valid_pagination(params):
-            return self.api_client.request(url, params)
+        if params and self._has_valid_pagination(params):
+            return self.api_client.request(url=url, params=params)
+        return ResponseDogs(facts=[], success=False)
 
-    def _has_valid_pagination(self, params: Optional[QueryParams] = {}) -> bool:
+    def _has_valid_pagination(self, params: QueryParams) -> bool:
         if not isinstance(params.get('number'), int) or params.get('number') not in range(1, 100):
             raise ValidationError('Wrong pagination value has been requested')
         return True
+
+
+
+
+
+
 
 
 class ApiDogsRestricted(ApiClient):
@@ -105,13 +127,14 @@ class ApiDogsRestricted(ApiClient):
     def request(
         self,
         url: str,
-        params: Optional[QueryParams] = {},
-        headers: Optional[RequestHeaders] = {}
+        params: Optional[QueryParams] = None,
+        headers: Optional[RequestHeaders] = None
     ) -> ResponseDogs:
-        if self._is_request_authorized(headers):
-            return self.api_client.request(url, headers)
-    
-    def _is_request_authorized(self, headers: Optional[RequestHeaders] = {}) -> bool:
+        if headers and self._is_request_authorized(headers):
+            return self.api_client.request(url=url, headers=headers)
+        return ResponseDogs(facts=[], success=False)
+
+    def _is_request_authorized(self, headers: RequestHeaders) -> bool:
         if headers.get('api_key') != self.api_key:
             raise NotFound('Not Found')
         return True
@@ -123,7 +146,7 @@ client = ApiDogsPaginated(ApiDogsPublic())
 # print(client.request(url, {'number': 0}))
 # >> Wrong pagination value has been requested
 
-# print(client.request(url, params=QueryParams(number=10)))
+print(client.request(url, params=QueryParams(number=10)))
 
 
 # client = ApiDogsRestricted(ApiDogsPublic(), api_key='super_secret')
